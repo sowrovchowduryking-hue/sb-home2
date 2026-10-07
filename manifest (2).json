@@ -1,0 +1,16 @@
+{
+  "background_color": "#154f12",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Sb",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Home",
+  "start_url": "/https://sowrovchowduryking-hue.github.io/sb-home2/",
+  "theme_color": "#ffffff",
+  "id": "sb-home",
+  "description": "SB HOME - Find and list homes easily",
+  "categories": [
+    "social networking"
+  ]
+}
