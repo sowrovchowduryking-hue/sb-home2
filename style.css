@@ -1,0 +1,851 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #070a0f;
+    color: #f5f7fb;
+    font-family: Arial, sans-serif;
+}
+
+
+/* =========================
+   TOP BAR
+========================= */
+
+header {
+    height: 66px;
+    background: #101722;
+    border-bottom: 1px solid #283548;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 22px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 1px;
+}
+
+.money {
+    color: #ffd34e;
+    font-weight: 800;
+    font-size: 18px;
+}
+
+
+/* =========================
+   MAIN LAYOUT
+========================= */
+
+.app {
+    display: flex;
+    height: calc(100vh - 66px);
+}
+
+
+/* =========================
+   LEFT MENU
+========================= */
+
+aside {
+    width: 220px;
+    background: #0c1119;
+    border-right: 1px solid #263244;
+
+    padding: 14px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.nav {
+    border: 0;
+
+    background: #172131;
+    color: #dbe4f0;
+
+    padding: 14px;
+
+    border-radius: 11px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition: 0.2s;
+}
+
+.nav:hover {
+    background: #263a55;
+}
+
+.nav.active {
+    background: #356fc0;
+    color: white;
+}
+
+
+/* =========================
+   MAIN CONTENT
+========================= */
+
+main {
+    flex: 1;
+
+    overflow: auto;
+
+    padding: 25px;
+}
+
+.page {
+    display: none;
+
+    max-width: 1200px;
+
+    margin: auto;
+}
+
+.page.active {
+    display: block;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+h2 {
+    margin-top: 8px;
+}
+
+p {
+    color: #aab7c8;
+}
+
+
+/* =========================
+   CAR GARAGE
+========================= */
+
+.car-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(210px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+.car-card {
+    background: #101a27;
+
+    border: 1px solid #29394f;
+
+    border-radius: 16px;
+
+    padding: 16px;
+
+    transition: 0.2s;
+}
+
+.car-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #4778b7;
+}
+
+.car-visual {
+    height: 125px;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #273a52,
+            #080c12
+        );
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 66px;
+}
+
+.car-name {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 5px;
+}
+
+.car-name h2 {
+    font-size: 18px;
+}
+
+.statline {
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #aeb9c8;
+
+    font-size: 13px;
+
+    margin-top: 8px;
+}
+
+.bar {
+    height: 7px;
+
+    background: #263448;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    margin-top: 5px;
+}
+
+.bar i {
+    display: block;
+
+    height: 100%;
+
+    background: #4c91ff;
+
+    border-radius: 9px;
+}
+
+.car-actions {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.car-actions button {
+    flex: 1;
+}
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+button {
+    border: 0;
+
+    background: #24344a;
+
+    color: white;
+
+    padding: 11px 15px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+
+    filter: brightness(1.15);
+}
+
+.primary {
+    background: #356fc0;
+}
+
+.small-btn {
+    background: #24344a;
+}
+
+
+/* =========================
+   BOX
+========================= */
+
+.box {
+    background: #101a27;
+
+    border: 1px solid #29394f;
+
+    border-radius: 16px;
+
+    padding: 20px;
+
+    max-width: 760px;
+}
+
+
+/* =========================
+   CAREER
+========================= */
+
+.level-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+.level {
+    background: #101a27;
+
+    border: 1px solid #29394f;
+
+    border-radius: 16px;
+
+    padding: 20px;
+}
+
+.level.locked {
+    opacity: 0.55;
+}
+
+
+/* =========================
+   MAP
+========================= */
+
+.map-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(230px, 1fr)
+        );
+
+    gap: 15px;
+
+    margin-top: 20px;
+}
+
+.map-card {
+    background: #101a27;
+
+    border: 1px solid #29394f;
+
+    border-radius: 16px;
+
+    padding: 20px;
+}
+
+.map-card.locked {
+    opacity: 0.55;
+}
+
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(280px, 1fr)
+        );
+
+    gap: 16px;
+}
+
+.profile-grid input,
+#friendInput {
+    width: 100%;
+
+    padding: 12px;
+
+    background: #080d14;
+
+    border: 1px solid #33445a;
+
+    color: white;
+
+    border-radius: 9px;
+
+    margin: 9px 0;
+}
+
+.avatar {
+    width: 120px;
+
+    height: 120px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    background: #1c2b3e;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 60px;
+
+    margin-bottom: 15px;
+}
+
+.avatar img {
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: none;
+}
+
+.avatar img.show {
+    display: block;
+}
+
+
+/* =========================
+   FRIENDS
+========================= */
+
+#friendsList {
+    margin-top: 15px;
+}
+
+.friend {
+    background: #0b1119;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    margin-top: 8px;
+}
+
+
+/* =========================
+   PASSENGER
+========================= */
+
+.progress {
+    height: 9px;
+
+    background: #253245;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    margin: 16px 0;
+}
+
+.progress i {
+    display: block;
+
+    height: 100%;
+
+    width: 0%;
+
+    background: #4c91ff;
+
+    transition: 0.3s;
+}
+
+
+/* =========================
+   RACE
+========================= */
+
+#raceTimer {
+    display: inline-block;
+
+    padding: 9px 14px;
+
+    background: #182435;
+
+    border: 1px solid #304158;
+
+    border-radius: 999px;
+
+    margin-bottom: 10px;
+
+    color: #ffd34e;
+
+    font-weight: bold;
+}
+
+#track {
+    height: 510px;
+
+    max-width: 900px;
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            #4d87b5,
+            #79a95f
+        );
+}
+
+
+/* Road */
+
+#track::before {
+    content: "";
+
+    position: absolute;
+
+    left: 25%;
+
+    width: 50%;
+
+    height: 100%;
+
+    background: #33383e;
+
+    border-left: 8px solid #929292;
+
+    border-right: 8px solid #929292;
+}
+
+
+/* Road center line */
+
+#track::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+
+    height: 100%;
+
+    border-left: 7px dashed #eee;
+
+    opacity: 0.75;
+}
+
+
+/* Finish */
+
+.finish {
+    position: absolute;
+
+    top: 22px;
+
+    left: 25%;
+
+    width: 50%;
+
+    text-align: center;
+
+    background: white;
+
+    color: black;
+
+    font-weight: 900;
+
+    padding: 6px;
+
+    z-index: 2;
+}
+
+
+/* Player */
+
+#player {
+    position: absolute;
+
+    bottom: 45px;
+
+    left: calc(50% - 30px);
+
+    font-size: 60px;
+
+    z-index: 5;
+
+    transition: left 0.08s;
+}
+
+
+/* Other cars */
+
+.bot {
+    position: absolute;
+
+    font-size: 38px;
+
+    z-index: 3;
+}
+
+
+/* =========================
+   CONTROLS
+========================= */
+
+.controls {
+    display: flex;
+
+    gap: 12px;
+
+    justify-content: center;
+
+    max-width: 900px;
+
+    margin-top: 14px;
+}
+
+.control {
+    width: 85px;
+
+    height: 55px;
+
+    font-size: 23px;
+
+    background: #19283b;
+}
+
+.brake {
+    background: #733c43;
+}
+
+
+/* =========================
+   NOTICE
+========================= */
+
+.notice {
+    background: #121d2b;
+
+    border-radius: 10px;
+
+    padding: 12px;
+
+    color: #b8c4d4;
+
+    margin-top: 12px;
+}
+
+
+/* =========================
+   CUSTOMIZE MODAL
+========================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0,0,0,0.72);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 20;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-box {
+    width: min(620px, 100%);
+
+    max-height: 90vh;
+
+    overflow: auto;
+
+    background: #111b29;
+
+    border: 1px solid #34465e;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    position: relative;
+}
+
+.close {
+    position: absolute;
+
+    right: 15px;
+
+    top: 12px;
+
+    background: transparent;
+
+    font-size: 20px;
+}
+
+.custom-preview {
+    text-align: center;
+
+    font-size: 80px;
+
+    padding: 15px;
+}
+
+.upgrade-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+
+    gap: 10px;
+}
+
+.upgrade {
+    background: #0b1119;
+
+    padding: 12px;
+
+    border-radius: 10px;
+}
+
+.swatches {
+    display: flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.swatch {
+    width: 35px;
+
+    height: 35px;
+
+    border-radius: 50%;
+
+    border: 2px solid white;
+
+    cursor: pointer;
+
+    padding: 0;
+}
+
+
+/* =========================
+   TOAST
+========================= */
+
+#toast {
+    position: fixed;
+
+    bottom: 22px;
+
+    right: 22px;
+
+    background: #182536;
+
+    padding: 13px 17px;
+
+    border: 1px solid #38506e;
+
+    border-radius: 10px;
+
+    display: none;
+
+    z-index: 50;
+}
+
+#toast.show {
+    display: block;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    aside {
+        width: 72px;
+    }
+
+    .nav {
+        text-align: center;
+
+        padding: 14px 5px;
+    }
+
+    .nav span {
+        display: none;
+    }
+
+    main {
+        padding: 14px;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .car-grid {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .car-visual {
+        height: 95px;
+
+        font-size: 48px;
+    }
+
+    .upgrade-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
