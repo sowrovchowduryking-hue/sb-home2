@@ -1,1625 +1,471 @@
-/* ==========================================
-   SB CAR - SIMPLE WORKING GAME
-========================================== */
+let currentUser = JSON.parse(localStorage.getItem("sbUser")) || null;
+let homes = JSON.parse(localStorage.getItem("sbHomes")) || [];
+let bookings = JSON.parse(localStorage.getItem("sbBookings")) || [];
 
-"use strict";
+let authMode = "login";
 
-/* ---------- GAME DATA ---------- */
+const defaultAvatar =
+  "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-const cars = [
-    { name: "SB Starter", icon: "🚗", price: 0, speed: 60 },
-    { name: "SB Street", icon: "🏎‍🟀", price: 12000, speed: 72 },
-    { name: "SB Sport", icon: "🚘", price: 20000, speed: 78 },
-    { name: "SB GT", icon: "🏎‍🟀", price: 28000, speed: 84 },
-    { name: "SB Muscle", icon: "🚗", price: 35000, speed: 88 },
-    { name: "SB Super", icon: "🏎‍🟀", price: 50000, speed: 95 },
-    { name: "SB Hyper", icon: "🏎‍🟀", price: 80000, speed: 100 },
-    { name: "SB Electric", icon: "🚘", price: 42000, speed: 92 },
-    { name: "SB Rally", icon: "🚙", price: 30000, speed: 80 },
-    { name: "SB Offroad", icon: "🚙", price: 32000, speed: 76 },
-    { name: "SB SUV", icon: "🚘", price: 40000, speed: 74 },
-    { name: "SB Roadster", icon: "🏎‍🟀", price: 47000, speed: 90 },
-    { name: "SB Classic", icon: "🚗", price: 18000, speed: 68 },
-    { name: "SB Luxury", icon: "🚘", price: 55000, speed: 82 },
-    { name: "SB Track", icon: "🏎‍🟀", price: 65000, speed: 98 },
-    { name: "SB Pickup", icon: "🛻", price: 22000, speed: 70 },
-    { name: "SB City", icon: "🚙", price: 16000, speed: 64 },
-    { name: "SB Coupe", icon: "🚘", price: 44000, speed: 87 },
-    { name: "SB Racer", icon: "🏎‍🟀", price: 100000, speed: 102 },
-    { name: "SB Ultimate", icon: "🏎‍🟀", price: 150000, speed: 110 }
-];
+function hideAll() {
+  document.querySelectorAll(".screen").forEach(s =>
+    s.classList.remove("active")
+  );
+}
 
-const maps = [
-    { name: "Bangladesh", flag: "🇧🇩", price: 0 },
-    { name: "Japan", flag: "🇯🇵", price: 20000 },
-    { name: "UAE", flag: "🇦🇪", price: 35000 },
-    { name: "USA", flag: "🇺🇸", price: 50000 },
-    { name: "UK", flag: "🇬🇧", price: 70000 },
-    { name: "Germany", flag: "🇩🇪", price: 90000 }
-];
+function showScreen(id) {
+  hideAll();
+  document.getElementById(id).classList.add("active");
+}
 
+function goWelcome() {
+  showScreen("welcome");
+}
 
-/* ---------- SAVE DATA ---------- */
+function showAuth(mode) {
+  authMode = mode;
+  showScreen("auth");
 
-let game = {
-    money: 5000,
-    level: 1,
-    xp: 0,
-    races: 0,
-    wins: 0,
-    trips: 0,
-    selectedCar: 0,
-    unlockedCars: [0],
-    unlockedMaps: [0],
-    name: "SB Driver",
-    photo: "",
-    friends: []
-};
+  document.getElementById("authTitle").textContent =
+    mode === "login" ? "Login" : "Create Account";
 
+  document.getElementById("registerFields").style.display =
+    mode === "register" ? "block" : "none";
 
-function saveGame() {
+  document.getElementById("authSwitch").innerHTML =
+    mode === "login"
+      ? `<p>নতুন account নেই?</p>
+         <button onclick="showAuth('register')">CREATE ACCOUNT</button>`
+      : `<p>আগে account আছে?</p>
+         <button onclick="showAuth('login')">LOGIN</button>`;
+}
+
+function submitAuth() {
+
+  const phone = document.getElementById("authPhone").value.trim();
+  const password = document.getElementById("authPassword").value.trim();
+
+  if (!phone || !password) {
+    alert("Phone এবং Password দিন।");
+    return;
+  }
+
+  if (authMode === "register") {
+
+    const name = document.getElementById("regName").value.trim();
+
+    if (!name) {
+      alert("আপনার নাম দিন।");
+      return;
+    }
+
+    currentUser = {
+      name,
+      phone,
+      password,
+      photo: defaultAvatar
+    };
+
+    localStorage.setItem("sbUser", JSON.stringify(currentUser));
+
+    alert("Account তৈরি হয়েছে!");
+    loadDashboard();
+
+  } else {
+
+    const saved = JSON.parse(localStorage.getItem("sbUser"));
+
+    if (!saved) {
+      alert("আগে Create Account করুন।");
+      return;
+    }
+
+    if (saved.phone !== phone || saved.password !== password) {
+      alert("Phone অথবা Password ভুল।");
+      return;
+    }
+
+    currentUser = saved;
+    loadDashboard();
+  }
+}
+
+function facebookLogin() {
+  alert(
+    "Facebook Login-এর আসল OAuth চালু করতে Meta Developer App ID প্রয়োজন। এই prototype-এ button রাখা হয়েছে।"
+  );
+}
+
+function loadDashboard() {
+
+  if (!currentUser) {
+    goWelcome();
+    return;
+  }
+
+  document.getElementById("userName").textContent =
+    currentUser.name;
+
+  document.getElementById("userPhone").textContent =
+    currentUser.phone;
+
+  const photo = currentUser.photo || defaultAvatar;
+
+  document.getElementById("miniAvatar").src = photo;
+  document.getElementById("profileAvatar").src = photo;
+
+  document.getElementById("profileName").value =
+    currentUser.name;
+
+  document.getElementById("profilePhone").value =
+    currentUser.phone;
+
+  showScreen("dashboard");
+}
+
+function logout() {
+  currentUser = null;
+  showScreen("welcome");
+}
+
+function openPage(id) {
+
+  showScreen(id);
+
+  if (id === "findHome") renderHomes();
+  if (id === "myHomes") renderMyHomes();
+  if (id === "bookings") renderBookings();
+
+  if (id === "profile") {
+    document.getElementById("profileName").value =
+      currentUser.name;
+
+    document.getElementById("profilePhone").value =
+      currentUser.phone;
+
+    document.getElementById("profileAvatar").src =
+      currentUser.photo || defaultAvatar;
+  }
+}
+
+function saveHome() {
+
+  const title = document.getElementById("homeTitle").value.trim();
+  const district = document.getElementById("district").value.trim();
+  const upazila = document.getElementById("upazila").value.trim();
+  const ward = document.getElementById("ward").value.trim();
+  const area = document.getElementById("area").value.trim();
+  const homeNumber = document.getElementById("homeNumber").value.trim();
+  const rooms = document.getElementById("rooms").value.trim();
+  const rent = document.getElementById("rent").value.trim();
+  const ownerPhone = document.getElementById("ownerPhone").value.trim();
+  const details = document.getElementById("homeDetails").value.trim();
+
+  const photoInput = document.getElementById("homePhoto");
+
+  if (!title || !district || !area || !rent || !ownerPhone) {
+    alert("বাড়ির নাম, জেলা, এলাকা, ভাড়া এবং ফোন নম্বর দিন।");
+    return;
+  }
+
+  function save(photo) {
+
+    homes.push({
+      id: Date.now(),
+      owner: currentUser.phone,
+      title,
+      district,
+      upazila,
+      ward,
+      area,
+      homeNumber,
+      rooms,
+      rent,
+      ownerPhone,
+      details,
+      photo
+    });
+
+    localStorage.setItem("sbHomes", JSON.stringify(homes));
+
+    alert("🏠 বাড়ি সফলভাবে Save হয়েছে!");
+
+    clearHomeForm();
+    openPage("myHomes");
+  }
+
+  if (photoInput.files.length) {
+
+    const reader = new FileReader();
+
+    reader.onload = e => save(e.target.result);
+
+    reader.readAsDataURL(photoInput.files[0]);
+
+  } else {
+    save("");
+  }
+}
+
+function clearHomeForm() {
+
+  [
+    "homeTitle",
+    "district",
+    "upazila",
+    "ward",
+    "area",
+    "homeNumber",
+    "rooms",
+    "rent",
+    "ownerPhone",
+    "homeDetails"
+  ].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+
+  document.getElementById("homePhoto").value = "";
+}
+
+function renderHomes() {
+
+  const container = document.getElementById("homeResults");
+
+  const search =
+    document.getElementById("searchBox").value.toLowerCase();
+
+  const results = homes.filter(home => {
+
+    const text =
+      `${home.title} ${home.district} ${home.upazila}
+       ${home.area} ${home.homeNumber}`.toLowerCase();
+
+    return text.includes(search);
+  });
+
+  if (!results.length) {
+    container.innerHTML =
+      `<div class="empty">কোনো বাড়ি পাওয়া যায়নি।</div>`;
+    return;
+  }
+
+  container.innerHTML =
+    results.map(homeCard).join("");
+}
+
+function homeCard(home) {
+
+  return `
+    <div class="home-card">
+
+      ${home.photo ? `<img src="${home.photo}">` : ""}
+
+      <h3>🏠 ${home.title}</h3>
+
+      <p>📍 ${home.district}, ${home.upazila || ""}
+      , ${home.area}</p>
+
+      <p>🏠 বাড়ি নম্বর:
+      ${home.homeNumber || "দেওয়া হয়নি"}</p>
+
+      <p>🛏️ রুম:
+      ${home.rooms || "দেওয়া হয়নি"}</p>
+
+      <p class="price">৳ ${home.rent} / মাস</p>
+
+      <p>📞 ${home.ownerPhone}</p>
+
+      <p>${home.details || ""}</p>
+
+      <button class="book"
+        onclick="bookHome(${home.id})">
+        BOOK HOME
+      </button>
+
+    </div>
+  `;
+}
+
+function renderMyHomes() {
+
+  const container =
+    document.getElementById("myHomeResults");
+
+  const mine = homes.filter(
+    home => home.owner === currentUser.phone
+  );
+
+  if (!mine.length) {
+    container.innerHTML =
+      `<div class="empty">
+       আপনি এখনও কোনো বাড়ি Add করেননি।
+       </div>`;
+    return;
+  }
+
+  container.innerHTML = mine.map(home => `
+    <div class="home-card">
+
+      ${home.photo ? `<img src="${home.photo}">` : ""}
+
+      <h3>🏠 ${home.title}</h3>
+
+      <p>📍 ${home.district}, ${home.area}</p>
+
+      <p class="price">
+        ৳ ${home.rent} / মাস
+      </p>
+
+      <button class="delete"
+        onclick="deleteHome(${home.id})">
+        DELETE
+      </button>
+
+    </div>
+  `).join("");
+}
+
+function deleteHome(id) {
+
+  if (!confirm("এই বাড়িটি Delete করতে চান?")) return;
+
+  homes = homes.filter(home => home.id !== id);
+
+  localStorage.setItem("sbHomes", JSON.stringify(homes));
+
+  renderMyHomes();
+}
+
+function bookHome(id) {
+
+  const home = homes.find(h => h.id === id);
+
+  if (!home) return;
+
+  bookings.push({
+    id: Date.now(),
+    homeId: home.id,
+    homeTitle: home.title,
+    user: currentUser.name,
+    phone: currentUser.phone,
+    date: new Date().toLocaleDateString("bn-BD"),
+    status: "Pending"
+  });
+
+  localStorage.setItem(
+    "sbBookings",
+    JSON.stringify(bookings)
+  );
+
+  alert("📋 Booking request পাঠানো হয়েছে!");
+
+  openPage("bookings");
+}
+
+function renderBookings() {
+
+  const container =
+    document.getElementById("bookingResults");
+
+  const mine = bookings.filter(
+    booking => booking.phone === currentUser.phone
+  );
+
+  if (!mine.length) {
+    container.innerHTML =
+      `<div class="empty">
+       আপনার কোনো Booking নেই।
+       </div>`;
+    return;
+  }
+
+  container.innerHTML = mine.map(booking => `
+    <div class="home-card">
+
+      <h3>🏠 ${booking.homeTitle}</h3>
+
+      <p>👤 ${booking.user}</p>
+      <p>📞 ${booking.phone}</p>
+      <p>📅 ${booking.date}</p>
+      <p>📌 Status:
+        <b>${booking.status}</b>
+      </p>
+
+      <button class="delete"
+        onclick="cancelBooking(${booking.id})">
+        CANCEL
+      </button>
+
+    </div>
+  `).join("");
+}
+
+function cancelBooking(id) {
+
+  if (!confirm("Booking Cancel করতে চান?")) return;
+
+  bookings = bookings.filter(
+    booking => booking.id !== id
+  );
+
+  localStorage.setItem(
+    "sbBookings",
+    JSON.stringify(bookings)
+  );
+
+  renderBookings();
+}
+
+function updateProfile() {
+
+  const name =
+    document.getElementById("profileName").value.trim();
+
+  const phone =
+    document.getElementById("profilePhone").value.trim();
+
+  const photoInput =
+    document.getElementById("profilePhoto");
+
+  if (!name || !phone) {
+    alert("Name এবং Phone দিন।");
+    return;
+  }
+
+  function finish(photo) {
+
+    currentUser.name = name;
+    currentUser.phone = phone;
+    currentUser.photo = photo ||
+      currentUser.photo ||
+      defaultAvatar;
+
     localStorage.setItem(
-        "SB_CAR_SAVE",
-        JSON.stringify(game)
-    );
-}
-
-
-function loadGame() {
-
-    try {
-
-        const saved =
-            localStorage.getItem("SB_CAR_SAVE");
-
-        if (saved) {
-
-            const data =
-                JSON.parse(saved);
-
-            game = {
-                ...game,
-                ...data
-            };
-
-        }
-
-    } catch (error) {
-
-        console.log("Save error:", error);
-
-    }
-
-}
-
-
-/* ---------- BASIC FUNCTIONS ---------- */
-
-function moneyUpdate() {
-
-    const money =
-        document.getElementById("money");
-
-    if (money) {
-        money.textContent =
-            game.money.toLocaleString();
-    }
-
-}
-
-
-function message(text) {
-
-    const toast =
-        document.getElementById("toast");
-
-    if (!toast) {
-        alert(text);
-        return;
-    }
-
-    toast.textContent = text;
-    toast.classList.add("show");
-
-    setTimeout(function () {
-
-        toast.classList.remove("show");
-
-    }, 2000);
-
-}
-
-
-/* ---------- PAGE SYSTEM ---------- */
-
-function openPage(pageName) {
-
-    const pages =
-        document.querySelectorAll(".page");
-
-    pages.forEach(function(page) {
-
-        page.classList.remove("active");
-
-    });
-
-
-    const selected =
-        document.getElementById(pageName);
-
-    if (selected) {
-        selected.classList.add("active");
-    }
-
-
-    const buttons =
-        document.querySelectorAll(".nav");
-
-    buttons.forEach(function(button) {
-
-        button.classList.remove("active");
-
-        if (
-            button.dataset.page === pageName
-        ) {
-
-            button.classList.add("active");
-
-        }
-
-    });
-
-
-    if (pageName === "room") {
-        showCars();
-    }
-
-    if (pageName === "career") {
-        showCareer();
-    }
-
-    if (pageName === "profile") {
-        showProfile();
-    }
-
-    if (pageName === "friends") {
-        showFriends();
-    }
-
-    if (pageName === "map") {
-        showMaps();
-    }
-
-}
-
-
-/* ---------- MENU ---------- */
-
-document
-    .querySelectorAll(".nav")
-    .forEach(function(button) {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                openPage(
-                    button.dataset.page
-                );
-
-            }
-        );
-
-    });
-
-
-/* ---------- CARS ---------- */
-
-function carUnlocked(index) {
-
-    return game.unlockedCars.includes(index);
-
-}
-
-
-function showCars() {
-
-    const garage =
-        document.getElementById("garage");
-
-    if (!garage) return;
-
-    garage.innerHTML = "";
-
-
-    cars.forEach(function(car, index) {
-
-        const unlocked =
-            carUnlocked(index);
-
-        const card =
-            document.createElement("div");
-
-        card.className = "car-card";
-
-
-        card.innerHTML = `
-
-            <div class="car-visual">
-                ${car.icon}
-            </div>
-
-            <div class="car-name">
-
-                <h2>
-                    ${car.name}
-                </h2>
-
-                <span>
-                    ${unlocked ? "✅" : "🔒"}
-                </span>
-
-            </div>
-
-            <div class="statline">
-                <span>Speed</span>
-                <b>${car.speed}</b>
-            </div>
-
-            <div class="bar">
-                <i style="width:${Math.min(
-                    car.speed,
-                    100
-                )}%"></i>
-            </div>
-
-            <p>
-                ${
-                    unlocked
-                    ? "Unlocked"
-                    : "Price: " +
-                      car.price.toLocaleString()
-                }
-            </p>
-
-            <div class="car-actions">
-
-                <button
-                    onclick="selectCar(${index})">
-
-                    ${
-                        game.selectedCar === index
-                        ? "Selected"
-                        : "Select"
-                    }
-
-                </button>
-
-                <button
-                    onclick="customize(${index})">
-
-                    Customize
-
-                </button>
-
-            </div>
-
-            ${
-                !unlocked
-                ?
-                `
-                <button
-                    class="primary"
-                    style="width:100%;margin-top:8px"
-                    onclick="buyCar(${index})">
-
-                    Unlock Car
-
-                </button>
-                `
-                :
-                ""
-            }
-
-        `;
-
-
-        garage.appendChild(card);
-
-    });
-
-}
-
-
-function selectCar(index) {
-
-    if (!carUnlocked(index)) {
-
-        message("আগে car unlock করুন।");
-
-        return;
-
-    }
-
-
-    game.selectedCar = index;
-
-    saveGame();
-
-    showCars();
-
-    message(
-        cars[index].name +
-        " selected!"
+      "sbUser",
+      JSON.stringify(currentUser)
     );
 
+    alert("✅ Profile update হয়েছে!");
+
+    loadDashboard();
+  }
+
+  if (photoInput.files.length) {
+
+    const reader = new FileReader();
+
+    reader.onload = e =>
+      finish(e.target.result);
+
+    reader.readAsDataURL(photoInput.files[0]);
+
+  } else {
+    finish("");
+  }
 }
 
-
-function buyCar(index) {
-
-    const car = cars[index];
-
-
-    if (game.money < car.price) {
-
-        message(
-            "এই car কেনার জন্য টাকা কম।"
-        );
-
-        return;
-
-    }
-
-
-    game.money -= car.price;
-
-    game.unlockedCars.push(index);
-
-    game.selectedCar = index;
-
-    saveGame();
-
-    moneyUpdate();
-
-    showCars();
-
-    message(
-        car.name +
-        " unlocked!"
-    );
-
+if (currentUser) {
+  loadDashboard();
+} else {
+  goWelcome();
 }
-
-
-/* ---------- CUSTOMIZE ---------- */
-
-function customize(index) {
-
-    if (!carUnlocked(index)) {
-
-        message("আগে car unlock করুন।");
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById("customModal");
-
-    const title =
-        document.getElementById("customTitle");
-
-    const body =
-        document.getElementById("customBody");
-
-
-    title.textContent =
-        cars[index].name +
-        " Customize";
-
-
-    body.innerHTML = `
-
-        <div class="custom-preview">
-            ${cars[index].icon}
-        </div>
-
-        <h3>🎨 Car Colour</h3>
-
-        <div class="swatches">
-
-            <button
-                class="swatch"
-                style="background:red"
-                onclick="changeColour('Red')">
-            </button>
-
-            <button
-                class="swatch"
-                style="background:blue"
-                onclick="changeColour('Blue')">
-            </button>
-
-            <button
-                class="swatch"
-                style="background:green"
-                onclick="changeColour('Green')">
-            </button>
-
-            <button
-                class="swatch"
-                style="background:white"
-                onclick="changeColour('White')">
-            </button>
-
-            <button
-                class="swatch"
-                style="background:black"
-                onclick="changeColour('Black')">
-            </button>
-
-            <button
-                class="swatch"
-                style="background:yellow"
-                onclick="changeColour('Yellow')">
-            </button>
-
-        </div>
-
-        <h3>⚙️ Upgrade</h3>
-
-        <div class="upgrade-grid">
-
-            <div class="upgrade">
-
-                <b>Engine +5</b>
-
-                <p>500 Coins</p>
-
-                <button
-                    onclick="upgrade(500)">
-
-                    Upgrade
-
-                </button>
-
-            </div>
-
-
-            <div class="upgrade">
-
-                <b>Turbo +8</b>
-
-                <p>700 Coins</p>
-
-                <button
-                    onclick="upgrade(700)">
-
-                    Upgrade
-
-                </button>
-
-            </div>
-
-
-            <div class="upgrade">
-
-                <b>Brake +5</b>
-
-                <p>500 Coins</p>
-
-                <button
-                    onclick="upgrade(500)">
-
-                    Upgrade
-
-                </button>
-
-            </div>
-
-
-            <div class="upgrade">
-
-                <b>Handling +6</b>
-
-                <p>600 Coins</p>
-
-                <button
-                    onclick="upgrade(600)">
-
-                    Upgrade
-
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    modal.classList.remove("hidden");
-
-}
-
-
-function changeColour(colour) {
-
-    message(
-        "Car colour changed to " +
-        colour
-    );
-
-}
-
-
-function upgrade(price) {
-
-    if (game.money < price) {
-
-        message("Money কম আছে।");
-
-        return;
-
-    }
-
-
-    game.money -= price;
-
-    saveGame();
-
-    moneyUpdate();
-
-    message("Upgrade complete! ⚙️");
-
-}
-
-
-const closeModal =
-    document.getElementById("closeModal");
-
-if (closeModal) {
-
-    closeModal.addEventListener(
-        "click",
-        function() {
-
-            document
-                .getElementById("customModal")
-                .classList.add("hidden");
-
-        }
-    );
-
-}
-
-
-/* ---------- CAREER ---------- */
-
-function showCareer() {
-
-    const levels =
-        document.getElementById("levels");
-
-    if (!levels) return;
-
-    levels.innerHTML = "";
-
-
-    for (
-        let i = 1;
-        i <= 7;
-        i++
-    ) {
-
-        const unlocked =
-            game.level >= i;
-
-
-        const card =
-            document.createElement("div");
-
-        card.className = "level";
-
-
-        if (!unlocked) {
-            card.classList.add("locked");
-        }
-
-
-        card.innerHTML = `
-
-            <h2>
-                Level ${i}
-            </h2>
-
-            <p>
-                🏁 Race Challenge
-            </p>
-
-            <p>
-                ⏱️ Time Limit:
-                ${100 - i * 5} seconds
-            </p>
-
-            ${
-                unlocked
-                ?
-                `
-                <button
-                    class="primary"
-                    onclick="
-                    startRace(${100 - i * 5})">
-
-                    Start Race
-
-                </button>
-                `
-                :
-                `
-                <p>
-                    🔒 Locked
-                </p>
-                `
-            }
-
-        `;
-
-
-        levels.appendChild(card);
-
-    }
-
-}
-
-
-/* ---------- RACE ---------- */
-
-let raceActive = false;
-
-let raceTime = 0;
-
-let raceLimit = 90;
-
-let raceTimer = null;
-
-let playerX = 50;
-
-
-function startRace(time = 90) {
-
-    openPage("play");
-
-    raceLimit = time;
-
-    raceTime = time;
-
-    raceActive = true;
-
-    playerX = 50;
-
-
-    const player =
-        document.getElementById("player");
-
-    if (player) {
-
-        player.style.left =
-            "calc(50% - 30px)";
-
-    }
-
-
-    createTraffic();
-
-    clearInterval(raceTimer);
-
-
-    updateTimer();
-
-
-    raceTimer =
-        setInterval(function() {
-
-            if (!raceActive) {
-                return;
-            }
-
-            raceTime--;
-
-            updateTimer();
-
-
-            if (raceTime <= 0) {
-
-                finishRace(false);
-
-            }
-
-        }, 1000);
-
-}
-
-
-function updateTimer() {
-
-    const timer =
-        document.getElementById("raceTimer");
-
-    if (!timer) return;
-
-    timer.textContent =
-        "00:" +
-        String(
-            Math.max(
-                0,
-                raceTime
-            )
-        ).padStart(2, "0");
-
-}
-
-
-function finishRace(win) {
-
-    if (!raceActive) {
-        return;
-    }
-
-
-    raceActive = false;
-
-    clearInterval(raceTimer);
-
-
-    game.races++;
-
-
-    if (win) {
-
-        game.wins++;
-
-        game.money += 700;
-
-        game.xp += 30;
-
-        message(
-            "🏆 You Win! +700 Coins"
-        );
-
-    } else {
-
-        message(
-            "⏱️ Time Over!"
-        );
-
-    }
-
-
-    while (game.xp >= 100) {
-
-        game.xp -= 100;
-
-        game.level++;
-
-        message(
-            "🎉 Level Up! " +
-            game.level
-        );
-
-    }
-
-
-    saveGame();
-
-    moneyUpdate();
-
-    showProfile();
-
-}
-
-
-function createTraffic() {
-
-    const traffic =
-        document.getElementById("traffic");
-
-    if (!traffic) return;
-
-
-    traffic.innerHTML = "";
-
-
-    for (
-        let i = 0;
-        i < 5;
-        i++
-    ) {
-
-        const bot =
-            document.createElement("div");
-
-        bot.className = "bot";
-
-        bot.textContent =
-            i % 2 === 0
-            ? "🚗"
-            : "🚕";
-
-
-        bot.style.left =
-            (
-                32 +
-                (i % 3) * 15
-            ) +
-            "%";
-
-
-        bot.style.top =
-            (
-                80 +
-                i * 80
-            ) +
-            "px";
-
-
-        traffic.appendChild(bot);
-
-    }
-
-}
-
-
-function movePlayer(direction) {
-
-    if (!raceActive) {
-        return;
-    }
-
-
-    playerX +=
-        direction * 3;
-
-
-    if (playerX < 30) {
-        playerX = 30;
-    }
-
-    if (playerX > 68) {
-        playerX = 68;
-    }
-
-
-    const player =
-        document.getElementById("player");
-
-    if (player) {
-
-        player.style.left =
-            calc(${playerX}% - 30px);
-
-    }
-
-}
-
-
-/* ---------- CONTROLS ---------- */
-
-const leftButton =
-    document.getElementById("leftBtn");
-
-const rightButton =
-    document.getElementById("rightBtn");
-
-
-if (leftButton) {
-
-    leftButton.addEventListener(
-        "click",
-        function() {
-
-            movePlayer(-1);
-
-        }
-    );
-
-}
-
-
-if (rightButton) {
-
-    rightButton.addEventListener(
-        "click",
-        function() {
-
-            movePlayer(1);
-
-        }
-    );
-
-}
-
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "ArrowLeft" ||
-            event.key.toLowerCase() === "a"
-        ) {
-
-            movePlayer(-1);
-
-        }
-
-
-        if (
-            event.key === "ArrowRight" ||
-            event.key.toLowerCase() === "d"
-        ) {
-
-            movePlayer(1);
-
-        }
-
-
-        if (
-            event.key === "r"
-        ) {
-
-            startRace(raceLimit);
-
-        }
-
-    }
-);
-
-
-/* ---------- ONLINE MATCH ---------- */
-
-let onlinePlayers = 0;
-
-
-const addBot =
-    document.getElementById("addBot");
-
-
-if (addBot) {
-
-    addBot.addEventListener(
-        "click",
-        function() {
-
-            if (onlinePlayers >= 9) {
-
-                message(
-                    "Maximum 10 players!"
-                );
-
-                return;
-
-            }
-
-
-            onlinePlayers++;
-
-
-            const text =
-                document.getElementById(
-                    "matchPlayers"
-                );
-
-
-            if (text) {
-
-                text.textContent =
-                    "You + " +
-                    onlinePlayers +
-                    " players";
-
-            }
-
-
-            const list =
-                document.getElementById(
-                    "roomPlayers"
-                );
-
-
-            if (list) {
-
-                const item =
-                    document.createElement(
-                        "div"
-                    );
-
-                item.className =
-                    "friend";
-
-                item.textContent =
-                    "🏎‍🟀 Racer " +
-                    onlinePlayers +
-                    " Ready";
-
-                list.appendChild(item);
-
-            }
-
-        }
-    );
-
-}
-
-
-const onlineStart =
-    document.getElementById(
-        "startOnline"
-    );
-
-
-if (onlineStart) {
-
-    onlineStart.addEventListener(
-        "click",
-        function() {
-
-            startRace(90);
-
-        }
-    );
-
-}
-
-
-/* ---------- PASSENGER ---------- */
-
-let passengerStarted = false;
-
-
-const passengerButton =
-    document.getElementById(
-        "passengerBtn"
-    );
-
-
-if (passengerButton) {
-
-    passengerButton.addEventListener(
-        "click",
-        function() {
-
-            if (!passengerStarted) {
-
-                passengerStarted = true;
-
-                document.getElementById(
-                    "missionText"
-                ).textContent =
-                    "Passenger picked up!";
-
-                document.getElementById(
-                    "tripProgress"
-                ).style.width =
-                    "50%";
-
-                this.textContent =
-                    "Deliver Passenger";
-
-                return;
-
-            }
-
-
-            passengerStarted = false;
-
-            game.trips++;
-
-            game.money += 500;
-
-            game.xp += 15;
-
-            document.getElementById(
-                "missionText"
-            ).textContent =
-                "Passenger delivered!";
-
-            document.getElementById(
-                "tripProgress"
-            ).style.width =
-                "100%";
-
-            this.textContent =
-                "Start Passenger Trip";
-
-
-            saveGame();
-
-            moneyUpdate();
-
-            showProfile();
-
-            message(
-                "💵 +500 Coins"
-            );
-
-        }
-    );
-
-}
-
-
-/* ---------- PROFILE ---------- */
-
-function showProfile() {
-
-    const name =
-        document.getElementById(
-            "driverName"
-        );
-
-    if (name) {
-
-        name.value =
-            game.name;
-
-    }
-
-
-    const level =
-        document.getElementById(
-            "profileLevel"
-        );
-
-    if (level) {
-
-        level.textContent =
-            game.level;
-
-    }
-
-
-    const xp =
-        document.getElementById(
-            "xpText"
-        );
-
-    if (xp) {
-
-        xp.textContent =
-            game.xp +
-            " / 100";
-
-    }
-
-
-    const races =
-        document.getElementById(
-            "raceText"
-        );
-
-    if (races) {
-
-        races.textContent =
-            game.races;
-
-    }
-
-
-    const wins =
-        document.getElementById(
-            "winText"
-        );
-
-    if (wins) {
-
-        wins.textContent =
-            game.wins;
-
-    }
-
-
-    const trips =
-        document.getElementById(
-            "tripText"
-        );
-
-    if (trips) {
-
-        trips.textContent =
-            game.trips;
-
-    }
-
-
-    const avatar =
-        document.getElementById(
-            "avatar"
-        );
-
-    const fallback =
-        document.getElementById(
-            "avatarFallback"
-        );
-
-
-    if (
-        avatar &&
-        game.photo
-    ) {
-
-        avatar.src =
-            game.photo;
-
-        avatar.classList.add(
-            "show"
-        );
-
-        if (fallback) {
-
-            fallback.style.display =
-                "none";
-
-        }
-
-    }
-
-}
-
-
-const saveProfile =
-    document.getElementById(
-        "saveProfile"
-    );
-
-
-if (saveProfile) {
-
-    saveProfile.addEventListener(
-        "click",
-        function() {
-
-            const input =
-                document.getElementById(
-                    "driverName"
-                );
-
-
-            if (
-                input &&
-                input.value.trim()
-            ) {
-
-                game.name =
-                    input.value.trim();
-
-                saveGame();
-
-                message(
-                    "Profile Saved!"
-                );
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ---------- PROFILE PHOTO ---------- */
-
-const photoInput =
-    document.getElementById(
-        "photo"
-    );
-
-
-if (photoInput) {
-
-    photoInput.addEventListener(
-        "change",
-        function(event) {
-
-            const file =
-                event.target.files[0];
-
-            if (!file) {
-                return;
-            }
-
-
-            const reader =
-                new FileReader();
-
-
-            reader.onload =
-                function() {
-
-                    game.photo =
-                        reader.result;
-
-                    saveGame();
-
-                    showProfile();
-
-                    message(
-                        "Profile photo added!"
-                    );
-
-                };
-
-
-            reader.readAsDataURL(file);
-
-        }
-    );
-
-}
-
-
-/* ---------- FRIENDS ---------- */
-
-function showFriends() {
-
-    const list =
-        document.getElementById(
-            "friendsList"
-        );
-
-    if (!list) return;
-
-
-    if (
-        game.friends.length === 0
-    ) {
-
-        list.innerHTML =
-            "<div class='friend'>No friends yet.</div>";
-
-        return;
-
-    }
-
-
-    list.innerHTML = "";
-
-
-    game.friends.forEach(
-        function(friend) {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-            item.className =
-                "friend";
-
-            item.textContent =
-                "👤 " +
-                friend;
-
-            list.appendChild(item);
-
-        }
-    );
-
-}
-
-
-const friendAdd =
-    document.getElementById(
-        "friendAdd"
-    );
-
-
-if (friendAdd) {
-
-    friendAdd.addEventListener(
-        "click",
-        function() {
-
-            const input =
-                document.getElementById(
-                    "friendInput"
-                );
-
-
-            if (
-                !input ||
-                !input.value.trim()
-            ) {
-
-                message(
-                    "Friend name লিখুন।"
-                );
-
-                return;
-
-            }
-
-
-            game.friends.push(
-                input.value.trim()
-            );
-
-
-            input.value = "";
-
-            saveGame();
-
-            showFriends();
-
-            message(
-                "Friend Added!"
-            );
-
-        }
-    );
-
-}
-
-
-/* ---------- MAPS ---------- */
-
-function showMaps() {
-
-    const grid =
-        document.getElementById(
-            "mapGrid"
-        );
-
-    if (!grid) return;
-
-
-    grid.innerHTML = "";
-
-
-    maps.forEach(
-        function(map, index) {
-
-            const unlocked =
-                game.unlockedMaps.includes(
-                    index
-                );
-
-
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "map-card";
-
-
-            if (!unlocked) {
-
-                card.classList.add(
-                    "locked"
-                );
-
-            }
-
-
-            card.innerHTML = `
-
-                <h2>
-                    ${map.flag}
-                    ${map.name}
-                </h2>
-
-                <p>
-                    ${
-                        unlocked
-                        ?
-                        "✅ Unlocked"
-                        :
-                        "🔒 " +
-                        map.price.toLocaleString() +
-                        " Coins"
-                    }
-                </p>
-
-                ${
-                    unlocked
-                    ?
-                    `
-                    <button
-                        class="primary"
-                        onclick="startRace(90)">
-
-                        Drive
-
-                    </button>
-                    `
-                    :
-                    `
-                    <button
-                        onclick="unlockMap(${index})">
-
-                        Unlock
-
-                    </button>
-                    `
-                }
-
-            `;
-
-
-            grid.appendChild(card);
-
-        }
-    );
-
-}
-
-
-function unlockMap(index) {
-
-    const map =
-        maps[index];
-
-
-    if (
-        game.money <
-        map.price
-    ) {
-
-        message(
-            "Map unlock করার মতো money নেই।"
-        );
-
-        return;
-
-    }
-
-
-    game.money -=
-        map.price;
-
-
-    game.unlockedMaps.push(
-        index
-    );
-
-
-    saveGame();
-
-    moneyUpdate();
-
-    showMaps();
-
-    message(
-        map.name +
-        " unlocked!"
-    );
-
-}
-
-
-/* ---------- START ---------- */
-
-loadGame();
-
-moneyUpdate();
-
-showCars();
-
-showCareer();
-
-showProfile();
-
-showFriends();
-
-showMaps();
-
-openPage("room");
-
-console.log(
-    "SB Car successfully loaded!"
-);
